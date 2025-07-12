@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spin The Wheel</title>
+    <meta name="description" content="تطبيق عجلة الحظ للاختيار العشوائي">
+    <meta name="theme-color" content="#4F46E5">
+
+    <!-- PWA Meta Tags -->
+    <link rel="manifest"
+        href="data:application/json;base64,eyJuYW1lIjoiU3BpbiBUaGUgV2hlZWwiLCJzaG9ydF9uYW1lIjoiU3BpbldoZWVsIiwiaWNvbnMiOlt7InNyYyI6ImRhdGE6aW1hZ2Uvc3ZnK3htbDtiYXNlNjQsUEhOMlp5QjNhV1IwYUQwaU1qQXdJaUIzYVdSMGFEMGlNakF3SWlCMmFXVjNRbTk0UFNJd0lEQWdNakF3SURJd01DSWdabWxzYkQwaWJtOXVaU0lnZUcxc2JuTTlJbWgwZEhBNkx5OTNkM2N1ZHpNdWIzSm5Mekl3TURBdmMzWm5JajQ4WTJseVkyeGxJR040UFNJeE1EQWlJR041UFNJeE1EQWlJSEk5SW5RNElpQm1hV3hzUFNJalF6TXpPRGc0SWk4K1BHUmxabk0rUEdkMllXUnBaVzUwSUdsa1BTSm5JaUIwZVhCbFBTSnNhVzVsWVhJaUlIZ3hQU0l3SWlCNU1UMGlNQ0lpSUhneVBTSXdJaUI1TWowaU1UQXdKU0krUEhOMGIzQWdiMlptYzJWMFBTSXdKU0lnYzNSdmNDMWpiMnh2Y2owaUkwWkdRemMyUWpkaUlpOCtQSE4wYjNBZ2IyWm1jMlYwUFNJeE1EQWxJaUJ6ZEc5d0xXTnZiRzl5UFNJalJFUkNPVVl4SWk4K1BDOWhaR1Z6UGp3dlpHVm1jejQ4TDNOMlp6ND0iLCJzaXplcyI6IjE5MngxOTIiLCJ0eXBlIjoiaW1hZ2Uvc3ZnK3htbCJ9XSwic3RhcnRfdXJsIjoiLyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiNGRkZGRkYiLCJ0aGVtZV9jb2xvciI6IiM0RjQ2RTUifQ==">
+    <link rel="apple-touch-icon"
+        href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSI4MCIgZmlsbD0iI0MzMzg4OCIvPjxkZWZzPjxncmFkaWVudCBpZD0iZyIgdHlwZT0ibGluZWFyIiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI0ZGQzc2QiIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iI0REQjlGMSIvPjwvZGVmcz48L3N2Zz4=">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            color: #4F46E5;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .wheel-container {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            margin: 0 auto 30px;
+        }
+
+        .wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 10px solid #fff;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+            transition: transform 3s cubic-bezier(0.23, 1, 0.32, 1);
+            position: relative;
+            overflow: hidden;
+            background: #f0f0f0;
+        }
+
+        .wheel-segment {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 50%;
+            height: 50%;
+            transform-origin: 0 0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .wheel-segment span {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            font-weight: bold;
+            font-size: 14px;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            text-align: center;
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .pointer {
+            position: absolute;
+            top: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 18px solid transparent;
+            border-right: 18px solid transparent;
+            border-top: 35px solid #FF3B30;
+            z-index: 100;
+            filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.4));
+        }
+
+        .pointer::after {
+            content: '';
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 0 2px #FF3B30;
+        }
+
+        .center-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #4F46E5, #7C3AED);
+            border-radius: 50%;
+            z-index: 50;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            border: 4px solid #fff;
+        }
+
+        .center-circle::after {
+            content: '🎯';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 120px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #4F46E5, #7C3AED);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #6B7280, #4B5563);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #EF4444, #DC2626);
+            color: white;
+        }
+
+        .btn-fullscreen {
+            background: linear-gradient(45deg, #10B981, #059669);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .settings {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            backdrop-filter: blur(5px);
+        }
+
+        .settings h3 {
+            margin-bottom: 15px;
+            color: #4F46E5;
+        }
+
+        .settings-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .settings input,
+        .settings select {
+            padding: 8px 12px;
+            border: 2px solid #E5E7EB;
+            border-radius: 10px;
+            font-size: 14px;
+            width: 200px;
+        }
+
+        .settings input:focus,
+        .settings select:focus {
+            outline: none;
+            border-color: #4F46E5;
+        }
+
+        .items-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .item-tag {
+            background: #4F46E5;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .item-tag button {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 0;
+            margin: 0;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: linear-gradient(45deg, #FCD34D, #F59E0B);
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #92400E;
+            display: none;
+        }
+
+        .fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1000;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fullscreen .wheel-container {
+            width: 70vh;
+            height: 70vh;
+            max-width: 600px;
+            max-height: 600px;
+        }
+
+        .install-prompt {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #4F46E5;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            display: none;
+            z-index: 1000;
+        }
+
+        .install-prompt button {
+            background: none;
+            border: 2px solid white;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+                margin: 5px;
+                width: 95%;
+            }
+
+            .wheel-container {
+                width: 320px;
+                height: 320px;
+            }
+
+            .wheel-segment span {
+                font-size: 12px;
+                max-width: 80px;
+            }
+
+            .pointer {
+                border-left: 15px solid transparent;
+                border-right: 15px solid transparent;
+                border-top: 30px solid #FF3B30;
+            }
+
+            .center-circle {
+                width: 70px;
+                height: 70px;
+            }
+
+            .center-circle::after {
+                font-size: 20px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+                margin-bottom: 20px;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 300px;
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+
+            .settings-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .settings input,
+            .settings select {
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .settings {
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+                margin: 2px;
+            }
+
+            .wheel-container {
+                width: 280px;
+                height: 280px;
+            }
+
+            .wheel-segment span {
+                font-size: 10px;
+                max-width: 60px;
+            }
+
+            .pointer {
+                border-left: 12px solid transparent;
+                border-right: 12px solid transparent;
+                border-top: 25px solid #FF3B30;
+            }
+
+            .center-circle {
+                width: 60px;
+                height: 60px;
+            }
+
+            .center-circle::after {
+                font-size: 18px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="mainContainer">
+        <h1>🎯 Spin The Wheel</h1>
+
+        <div class="wheel-container" id="wheelContainer">
+            <div class="pointer"></div>
+            <div class="wheel" id="wheel"></div>
+            <div class="center-circle"></div>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-primary" id="spinBtn">🎲 Spin the Wheel</button>
+            <button class="btn btn-secondary" id="resetBtn">🔄 Reset Wheel</button>
+            <button class="btn btn-fullscreen" id="fullscreenBtn">🖥️ Full Screen</button>
+        </div>
+
+        <div class="result" id="result"></div>
+
+        <div class="settings">
+            <h3>⚙️ إعدادات العجلة</h3>
+
+            <div class="settings-row">
+                <label>عدد العناصر:</label>
+                <input type="number" id="itemCount" value="8" min="2" max="20">
+            </div>
+
+            <div class="settings-row">
+                <label>نوع المحتوى:</label>
+                <select id="contentType">
+                    <option value="numbers">أرقام</option>
+                    <option value="names">أسماء</option>
+                    <option value="custom">مخصص</option>
+                </select>
+            </div>
+
+            <div class="settings-row" id="customItemRow" style="display: none;">
+                <label>أضف عنصر:</label>
+                <input type="text" id="customItem" placeholder="اكتب هنا...">
+                <button class="btn btn-primary" id="addItemBtn">إضافة</button>
+            </div>
+
+            <div class="items-list" id="itemsList"></div>
+        </div>
+    </div>
+
+    <div class="install-prompt" id="installPrompt">
+        <span>تثبيت التطبيق؟</span>
+        <button id="installBtn">تثبيت</button>
+        <button id="dismissBtn">إلغاء</button>
+    </div>
+
+    <script>
+        class SpinWheel {
+            constructor() {
+                this.wheel = document.getElementById('wheel');
+                this.spinBtn = document.getElementById('spinBtn');
+                this.resetBtn = document.getElementById('resetBtn');
+                this.fullscreenBtn = document.getElementById('fullscreenBtn');
+                this.itemCount = document.getElementById('itemCount');
+                this.contentType = document.getElementById('contentType');
+                this.customItem = document.getElementById('customItem');
+                this.addItemBtn = document.getElementById('addItemBtn');
+                this.customItemRow = document.getElementById('customItemRow');
+                this.itemsList = document.getElementById('itemsList');
+                this.result = document.getElementById('result');
+                this.mainContainer = document.getElementById('mainContainer');
+
+                this.items = [];
+                this.colors = [
+                    '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7',
+                    '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9',
+                    '#F8C471', '#82E0AA', '#F1948A', '#85C1E9', '#D2B4DE',
+                    '#A3E4D7', '#F9E79F', '#D5A6BD', '#AED6F1', '#A9DFBF'
+                ];
+
+                this.currentRotation = 0;
+                this.isSpinning = false;
+                this.isFullscreen = false;
+
+                this.init();
+            }
+
+            init() {
+                this.updateItems();
+                this.setupEventListeners();
+                this.setupPWA();
+            }
+
+            setupEventListeners() {
+                this.spinBtn.addEventListener('click', () => this.spin());
+                this.resetBtn.addEventListener('click', () => this.reset());
+                this.fullscreenBtn.addEventListener('click', () => this.toggleFullscreen());
+                this.itemCount.addEventListener('input', () => this.updateItems());
+                this.contentType.addEventListener('change', () => this.handleContentTypeChange());
+                this.addItemBtn.addEventListener('click', () => this.addCustomItem());
+                this.customItem.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') this.addCustomItem();
+                });
+
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && this.isFullscreen) {
+                        this.toggleFullscreen();
+                    }
+                    if (e.key === ' ' && !this.isSpinning) {
+                        e.preventDefault();
+                        this.spin();
+                    }
+                });
+            }
+
+            setupPWA() {
+                // Service Worker Registration
+                if ('serviceWorker' in navigator) {
+                    const swCode = `
+                        const CACHE_NAME = 'spin-wheel-v1';
+                        const urlsToCache = ['./', 'data:text/html,${encodeURIComponent(document.documentElement.outerHTML)}'];
+                        
+                        self.addEventListener('install', (event) => {
+                            event.waitUntil(
+                                caches.open(CACHE_NAME)
+                                    .then((cache) => cache.addAll(urlsToCache))
+                            );
+                        });
+                        
+                        self.addEventListener('fetch', (event) => {
+                            event.respondWith(
+                                caches.match(event.request)
+                                    .then((response) => response || fetch(event.request))
+                            );
+                        });
+                    `;
+
+                    const blob = new Blob([swCode], { type: 'application/javascript' });
+                    const swUrl = URL.createObjectURL(blob);
+
+                    navigator.serviceWorker.register(swUrl)
+                        .then(() => console.log('SW registered'))
+                        .catch(() => console.log('SW registration failed'));
+                }
+
+                // Install prompt
+                let deferredPrompt;
+                const installPrompt = document.getElementById('installPrompt');
+                const installBtn = document.getElementById('installBtn');
+                const dismissBtn = document.getElementById('dismissBtn');
+
+                window.addEventListener('beforeinstallprompt', (e) => {
+                    e.preventDefault();
+                    deferredPrompt = e;
+                    installPrompt.style.display = 'block';
+                });
+
+                installBtn.addEventListener('click', () => {
+                    if (deferredPrompt) {
+                        deferredPrompt.prompt();
+                        deferredPrompt.userChoice.then(() => {
+                            deferredPrompt = null;
+                            installPrompt.style.display = 'none';
+                        });
+                    }
+                });
+
+                dismissBtn.addEventListener('click', () => {
+                    installPrompt.style.display = 'none';
+                });
+            }
+
+            handleContentTypeChange() {
+                const type = this.contentType.value;
+                if (type === 'custom') {
+                    this.customItemRow.style.display = 'flex';
+                } else {
+                    this.customItemRow.style.display = 'none';
+                    this.updateItems();
+                }
+            }
+
+            addCustomItem() {
+                const item = this.customItem.value.trim();
+                if (item && !this.items.includes(item)) {
+                    this.items.push(item);
+                    this.customItem.value = '';
+                    this.updateItemsList();
+                    this.createWheel();
+                }
+            }
+
+            removeCustomItem(item) {
+                this.items = this.items.filter(i => i !== item);
+                this.updateItemsList();
+                this.createWheel();
+            }
+
+            updateItems() {
+                const count = parseInt(this.itemCount.value);
+                const type = this.contentType.value;
+
+                this.items = [];
+
+                if (type === 'numbers') {
+                    for (let i = 1; i <= count; i++) {
+                        this.items.push(i.toString());
+                    }
+                } else if (type === 'names') {
+                    const names = ['أحمد', 'فاطمة', 'محمد', 'عائشة', 'علي', 'خديجة', 'حسن', 'زينب', 'يوسف', 'مريم', 'عبدالله', 'أسماء', 'إبراهيم', 'رقية', 'عمر', 'سارة', 'خالد', 'نور', 'سعد', 'هدى'];
+                    for (let i = 0; i < count; i++) {
+                        this.items.push(names[i] || `الاسم ${i + 1}`);
+                    }
+                }
+
+                this.updateItemsList();
+                this.createWheel();
+            }
+
+            updateItemsList() {
+                if (this.contentType.value === 'custom') {
+                    this.itemsList.innerHTML = '';
+                    this.items.forEach(item => {
+                        const tag = document.createElement('div');
+                        tag.className = 'item-tag';
+                        tag.innerHTML = `
+                            <span>${item}</span>
+                            <button onclick="spinWheel.removeCustomItem('${item}')">×</button>
+                        `;
+                        this.itemsList.appendChild(tag);
+                    });
+                } else {
+                    this.itemsList.innerHTML = '';
+                }
+            }
+
+            createWheel() {
+                this.wheel.innerHTML = '';
+                const segmentAngle = 360 / this.items.length;
+
+                this.items.forEach((item, index) => {
+                    const segment = document.createElement('div');
+                    segment.className = 'wheel-segment';
+                    segment.style.backgroundColor = this.colors[index % this.colors.length];
+                    segment.style.transform = `rotate(${index * segmentAngle}deg)`;
+
+                    // إنشاء شكل مثلث صحيح للقطاع
+                    const radius = 200; // نصف قطر العجلة
+                    const startAngle = 0;
+                    const endAngle = segmentAngle;
+
+                    // حساب نقاط المثلث بـ SVG
+                    const x1 = 0;
+                    const y1 = 0;
+                    const x2 = radius * Math.cos(startAngle * Math.PI / 180);
+                    const y2 = radius * Math.sin(startAngle * Math.PI / 180);
+                    const x3 = radius * Math.cos(endAngle * Math.PI / 180);
+                    const y3 = radius * Math.sin(endAngle * Math.PI / 180);
+
+                    segment.style.clipPath = `polygon(0% 0%, 100% 0%, 100% 100%)`;
+                    segment.style.transformOrigin = '0% 0%';
+
+                    const span = document.createElement('span');
+                    span.textContent = item;
+
+                    // تحسين حجم النص بناءً على عدد العناصر
+                    if (this.items.length > 15) {
+                        span.style.fontSize = '10px';
+                        span.style.maxWidth = '60px';
+                    } else if (this.items.length > 10) {
+                        span.style.fontSize = '12px';
+                        span.style.maxWidth = '80px';
+                    } else {
+                        span.style.fontSize = '14px';
+                        span.style.maxWidth = '120px';
+                    }
+
+                    segment.appendChild(span);
+                    this.wheel.appendChild(segment);
+                });
+            }
+
+            spin() {
+                if (this.isSpinning || this.items.length === 0) return;
+
+                this.isSpinning = true;
+                this.spinBtn.disabled = true;
+                this.result.style.display = 'none';
+
+                const segmentAngle = 360 / this.items.length;
+                const randomSpins = Math.floor(Math.random() * 5) + 3;
+                const randomAngle = Math.floor(Math.random() * 360);
+                const totalRotation = randomSpins * 360 + randomAngle;
+
+                this.currentRotation += totalRotation;
+                this.wheel.style.transform = `rotate(${this.currentRotation}deg)`;
+
+                setTimeout(() => {
+                    // 1. الدوران الفعلي ضمن [0..360)
+                    const normalized = this.currentRotation % 360;
+                    // 2. نضيف 90° لتصحيح السهم للأعلى
+                    const corrected = (normalized + 90) % 360;
+                    // 3. نحسب الفهرس
+                    const idx = Math.floor(corrected / segmentAngle);
+                    // 4. نعكس لأن القطاعات تموضعها بعكس عقارب الساعة
+                    const selectedIndex = (this.items.length - 1 - idx + this.items.length) % this.items.length;
+                    const selectedItem = this.items[selectedIndex];
+
+                    this.showResult(selectedItem);
+                    this.isSpinning = false;
+                    this.spinBtn.disabled = false;
+                }, 3000);
+            }
+
+
+            showResult(item) {
+                this.result.textContent = `🎉 النتيجة: ${item}`;
+                this.result.style.display = 'block';
+
+                // Sound effect (if supported)
+                if ('speechSynthesis' in window) {
+                    const utterance = new SpeechSynthesisUtterance(`النتيجة هي ${item}`);
+                    utterance.lang = 'ar';
+                    utterance.rate = 0.8;
+                    speechSynthesis.speak(utterance);
+                }
+            }
+
+            reset() {
+                this.currentRotation = 0;
+                this.wheel.style.transform = 'rotate(0deg)';
+                this.result.style.display = 'none';
+                this.isSpinning = false;
+                this.spinBtn.disabled = false;
+            }
+
+            toggleFullscreen() {
+                if (!this.isFullscreen) {
+                    this.mainContainer.classList.add('fullscreen');
+                    this.fullscreenBtn.textContent = '🔙 Exit Fullscreen';
+                    this.isFullscreen = true;
+
+                    if (document.documentElement.requestFullscreen) {
+                        document.documentElement.requestFullscreen();
+                    }
+                } else {
+                    this.mainContainer.classList.remove('fullscreen');
+                    this.fullscreenBtn.textContent = '🖥️ Full Screen';
+                    this.isFullscreen = false;
+
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    }
+                }
+            }
+        }
+
+        // Initialize the wheel when page loads
+        let spinWheel;
+        document.addEventListener('DOMContentLoaded', () => {
+            spinWheel = new SpinWheel();
+        });
+    </script>
+</body>
+
+</html>
