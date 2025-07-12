@@ -9,10 +9,10 @@
     <meta name="theme-color" content="#4F46E5">
 
     <!-- PWA Meta Tags -->
-    <link rel="manifest"
-        href="data:application/json;base64,eyJuYW1lIjoiU3BpbiBUaGUgV2hlZWwiLCJzaG9ydF9uYW1lIjoiU3BpbldoZWVsIiwiaWNvbnMiOlt7InNyYyI6ImRhdGE6aW1hZ2Uvc3ZnK3htbDtiYXNlNjQsUEhOMlp5QjNhV1IwYUQwaU1qQXdJaUIzYVdSMGFEMGlNakF3SWlCMmFXVjNRbTk0UFNJd0lEQWdNakF3SURJd01DSWdabWxzYkQwaWJtOXVaU0lnZUcxc2JuTTlJbWgwZEhBNkx5OTNkM2N1ZHpNdWIzSm5Mekl3TURBdmMzWm5JajQ4WTJseVkyeGxJR040UFNJeE1EQWlJR041UFNJeE1EQWlJSEk5SW5RNElpQm1hV3hzUFNJalF6TXpPRGc0SWk4K1BHUmxabk0rUEdkMllXUnBaVzUwSUdsa1BTSm5JaUIwZVhCbFBTSnNhVzVsWVhJaUlIZ3hQU0l3SWlCNU1UMGlNQ0lpSUhneVBTSXdJaUI1TWowaU1UQXdKU0krUEhOMGIzQWdiMlptYzJWMFBTSXdKU0lnYzNSdmNDMWpiMnh2Y2owaUkwWkdRemMyUWpkaUlpOCtQSE4wYjNBZ2IyWm1jMlYwUFNJeE1EQWxJaUJ6ZEc5d0xXTnZiRzl5UFNJalJFUkNPVVl4SWk4K1BDOWhaR1Z6UGp3dlpHVm1jejQ4TDNOMlp6ND0iLCJzaXplcyI6IjE5MngxOTIiLCJ0eXBlIjoiaW1hZ2Uvc3ZnK3htbCJ9XSwic3RhcnRfdXJsIjoiLyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiNGRkZGRkYiLCJ0aGVtZV9jb2xvciI6IiM0RjQ2RTUifQ==">
-    <link rel="apple-touch-icon"
-        href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSI4MCIgZmlsbD0iI0MzMzg4OCIvPjxkZWZzPjxncmFkaWVudCBpZD0iZyIgdHlwZT0ibGluZWFyIiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI0ZGQzc2QiIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iI0REQjlGMSIvPjwvZGVmcz48L3N2Zz4=">
+    <link rel="manifest" href="manifest.json">
+
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+
 
     <style>
         * {
@@ -433,6 +433,10 @@
             <button class="btn btn-primary" id="spinBtn">🎲 Spin the Wheel</button>
             <button class="btn btn-secondary" id="resetBtn">🔄 Reset Wheel</button>
             <button class="btn btn-fullscreen" id="fullscreenBtn">🖥️ Full Screen</button>
+            <button id="installAppBtn" class="btn btn-primary" style="display: block;">
+                📲 تثبيت التطبيق
+            </button>
+
         </div>
 
         <div class="result" id="result"></div>
@@ -530,60 +534,62 @@
             }
 
             setupPWA() {
-                // Service Worker Registration
+                // تسجيل الـ Service Worker
                 if ('serviceWorker' in navigator) {
-                    const swCode = `
-                        const CACHE_NAME = 'spin-wheel-v1';
-                        const urlsToCache = ['./', 'data:text/html,${encodeURIComponent(document.documentElement.outerHTML)}'];
-                        
-                        self.addEventListener('install', (event) => {
-                            event.waitUntil(
-                                caches.open(CACHE_NAME)
-                                    .then((cache) => cache.addAll(urlsToCache))
-                            );
-                        });
-                        
-                        self.addEventListener('fetch', (event) => {
-                            event.respondWith(
-                                caches.match(event.request)
-                                    .then((response) => response || fetch(event.request))
-                            );
-                        });
-                    `;
-
-                    const blob = new Blob([swCode], { type: 'application/javascript' });
-                    const swUrl = URL.createObjectURL(blob);
-
-                    navigator.serviceWorker.register(swUrl)
-                        .then(() => console.log('SW registered'))
-                        .catch(() => console.log('SW registration failed'));
+                    navigator.serviceWorker.register('sw.js')
+                        .then(() => console.log('Service Worker Registered'))
+                        .catch(() => console.log('Service Worker Failed'));
                 }
 
-                // Install prompt
                 let deferredPrompt;
+
+                // الزرار اللي بيظهر تحت تلقائيًا (Popup-style)
                 const installPrompt = document.getElementById('installPrompt');
                 const installBtn = document.getElementById('installBtn');
                 const dismissBtn = document.getElementById('dismissBtn');
 
+                // الزرار اللي في الصفحة (optional manual button)
+                const manualInstallBtn = document.getElementById('installAppBtn');
+
                 window.addEventListener('beforeinstallprompt', (e) => {
                     e.preventDefault();
                     deferredPrompt = e;
-                    installPrompt.style.display = 'block';
-                });
 
-                installBtn.addEventListener('click', () => {
-                    if (deferredPrompt) {
-                        deferredPrompt.prompt();
-                        deferredPrompt.userChoice.then(() => {
-                            deferredPrompt = null;
-                            installPrompt.style.display = 'none';
+                    // إظهار الزرار اللي تحت (البانر)
+                    if (installPrompt) {
+                        installPrompt.style.display = 'block';
+                    }
+
+                    // إظهار الزرار اللي في الصفحة لو موجود
+                    if (manualInstallBtn) {
+                        manualInstallBtn.style.display = 'inline-block';
+                        manualInstallBtn.addEventListener('click', () => {
+                            manualInstallBtn.style.display = 'none';
+                            deferredPrompt.prompt();
+                            deferredPrompt.userChoice.then(() => {
+                                deferredPrompt = null;
+                            });
                         });
                     }
                 });
 
-                dismissBtn.addEventListener('click', () => {
-                    installPrompt.style.display = 'none';
-                });
+                if (installBtn) {
+                    installBtn.addEventListener('click', () => {
+                        if (deferredPrompt) {
+                            deferredPrompt.prompt();
+                            deferredPrompt.userChoice.then(() => {
+                                deferredPrompt = null;
+                                installPrompt.style.display = 'none';
+                            });
+                        }
+                    });
+                }
+
+                if (dismissBtn) {
+                    dismissBtn.addEventListener('click', () => {
+                        installPrompt.style.display = 'none';
+                    });
+                }
             }
 
             handleContentTypeChange() {
